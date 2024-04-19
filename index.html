@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" >
+    <title>Speaker and Instrument recognizing system</title>
+    <link rel="stylesheet" href="index.css">
+    <style>
+        /* CSS for the loader */
+        #loader {
+            display: none;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <h1>Speaker and Instrument recognizing system</h1>
+<div class ="container">
+
+    <div class="form">
+    <h2>Upload Audio File</h2>
+    <form id="uploadForm" enctype="multipart/form-data">
+        <label for="audioFile">Select Audio File:</label>
+        <input type="file" id="audioFile" name="audioFile" accept=".mp3, .wav, .ogg" required>
+        <input type="button" value="Upload" id="uploadButton">
+        <!-- <br>
+        <label for="precisionA">get precision,accuracy</label>
+        <input type="button" id ="precisionA" value="calculate" id="cacl">
+        <br>
+      -->
+    </form>
+
+    
+    <div id="output1"></div>
+    <div id="loader"></div>
+    </div>
+    <div class="form">
+    <h2>Upload instrument audio</h2>
+    <form id="uploadForm2" enctype="multipart/form-data">
+        <label for="audioFile2">Select instrument File:</label>
+        <input type="file" id="audioFile2" name="audioFile2" accept=".mp3, .wav, .ogg" required>
+        <input type="button" value="Upload" id="uploadButton2">
+        <br>
+        <!-- <br>
+        <label for="precisioni">get precision,accuracy</label>
+        <input type="button" id="precisioni"value="calculate" id="cacl">
+        <br>
+         -->
+    </form>
+    <div id="output2"></div>
+    <div id="loader"></div>
+    </div>
+</div>
+
+    <script>
+        document.getElementById('uploadButton').addEventListener('click', uploadAudio);
+
+        async function uploadAudio() {
+            const loader = document.getElementById('loader');
+            const output = document.getElementById('output');
+            loader.style.display = 'block'; 
+
+            const fileInput = document.getElementById('audioFile');
+            if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+                console.error('No file selected');
+                loader.style.display = 'none'; 
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('audioFile', fileInput.files[0]);
+
+            try {
+                const response = await fetch('http://localhost:4000/audio', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log('Response:', data);
+                output1.innerText = data.outputData;
+            } catch (error) {
+                console.error('Error uploading file:', error);
+            } finally {
+                loader.style.display = 'none'; 
+            }
+        }
+        document.getElementById('uploadButton2').addEventListener('click', instrument);
+        async function instrument() {
+            const loader = document.getElementById('loader');
+            const output = document.getElementById('output');
+            loader.style.display = 'block'; 
+
+            const fileInput = document.getElementById('audioFile2');
+            if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+                console.error('No file selected');
+                loader.style.display = 'none'; // Hide loader
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('audioFile2', fileInput.files[0]);
+
+            try {
+                const response = await fetch('http://localhost:4000/instrument', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log('Response:', data);
+                output2.innerText = data.outputData;
+            } catch (error) {
+                console.error('Error uploading file:', error);
+            } finally {
+                loader.style.display = 'none'; // Hide loader
+            }
+        }
+        document.getElementById('precisionA').addEventListener('click', pre);
+
+async function pre() {
+    const loader = document.getElementById('loader');
+    const output = document.getElementById('output');
+    loader.style.display = 'block'; 
+
+    //const fileInput = document.getElementById('audioFile');
+    // if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+    //     console.error('No file selected');
+    //     loader.style.display = 'none'; 
+    //     return;
+    // }
+
+    const formData = new FormData();
+    // formData.append('audioFile', fileInput.files[0]);
+
+    try {
+        const response = await fetch('http://localhost:4000/precisionA', {
+            method: 'POST',
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log('Response:', data);
+        output1.innerText = data.outputData;
+    } catch (error) {
+        console.error('Error uploading file:', error);
+    } finally {
+        loader.style.display = 'none'; 
+    }
+}
+document.getElementById('precisioni').addEventListener('click', prei);
+
+async function prei() {
+    const loader = document.getElementById('loader');
+    const output = document.getElementById('output');
+    loader.style.display = 'block'; 
+
+    //const fileInput = document.getElementById('audioFile');
+    // if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+    //     console.error('No file selected');
+    //     loader.style.display = 'none'; 
+    //     return;
+    // }
+
+    const formData = new FormData();
+    // formData.append('audioFile', fileInput.files[0]);
+
+    try {
+        const response = await fetch('http://localhost:4000/precisioni', {
+            method: 'POST',
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log('Response:', data);
+        output2.innerText = data.outputData;
+    } catch (error) {
+        console.error('Error uploading file:', error);
+    } finally {
+        loader.style.display = 'none'; 
+    }
+}
+    </script>
+</body>
+</html>
